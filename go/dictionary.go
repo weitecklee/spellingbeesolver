@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"log"
 	"os"
+	"sort"
 )
 
 func LoadWords() *[]string {
@@ -77,6 +78,7 @@ func (t *Trie) FindWords(letters string) []string {
 	centerLetter := rune(letters[0])
 	result := []string{}
 	t.searchWords(t.root, lettersSet, []rune{}, &result, centerLetter, false)
+	sort.Strings(result)
 	return result
 }
 
