@@ -57,14 +57,28 @@ class Dictionary {
     const words = [];
     const centerLetter = letters[0];
     this.root.findWords(letters, words, [], centerLetter, false);
-    words.sort();
-    return words;
+    const pangramRegex = new RegExp(
+      "^" +
+        letters
+          .split("")
+          .map((c) => `(?=.*${c})`)
+          .join("")
+    );
+    const pangrams = [];
+    const others = [];
+    for (const word of words) {
+      if (pangramRegex.test(word)) pangrams.push(word.toUpperCase());
+      else others.push(word);
+    }
+    pangrams.sort();
+    others.sort();
+    return pangrams.concat(others);
   }
 }
 
 const dictionary = new Dictionary();
 for (const word of wordList) {
-  dictionary.addWord(word);
+  if (word.length >= 4) dictionary.addWord(word);
 }
 
 module.exports = dictionary;
