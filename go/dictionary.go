@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"sort"
+	"strings"
 )
 
 func LoadWords() *[]string {
@@ -78,8 +79,36 @@ func (t *Trie) FindWords(letters string) []string {
 	centerLetter := rune(letters[0])
 	result := []string{}
 	t.searchWords(t.root, lettersSet, []rune{}, &result, centerLetter, false)
-	sort.Strings(result)
-	return result
+	var pangrams []string
+	var others []string
+	for _, word := range result {
+		if isPangram(word, letters) {
+			pangrams = append(pangrams, strings.ToUpper(word))
+		} else {
+			others = append(others, word)
+		}
+	}
+	sort.Strings(pangrams)
+	sort.Strings(others)
+	return append(pangrams, others...)
+}
+
+func isPangram(word, letters string) bool {
+	lettersMap := make(map[rune]bool)
+	for _, letter := range letters {
+		lettersMap[letter] = false
+	}
+	for _, letter := range word {
+		if _, exists := lettersMap[letter]; exists {
+			lettersMap[letter] = true
+		}
+	}
+	for _, found := range lettersMap {
+		if !found {
+			return false
+		}
+	}
+	return true
 }
 
 func MakeDictionary() *Trie {
